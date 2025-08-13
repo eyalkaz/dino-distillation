@@ -6,8 +6,5 @@ runs/
 *.cache
 datasets
 distilized_model.pt
-user_folder
 .vscode
-cats
-test
 test_venv

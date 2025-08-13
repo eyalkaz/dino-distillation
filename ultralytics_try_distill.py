@@ -11,10 +11,9 @@ print(f"Number of parameters in ultralytics_distill: {total_params}")
 model.info()
 
 # Perform object detection on an image
-path = "drafts"
-image ="00000455_001.jpg"
-#image ="wild.jpg"
-#image ="tomatos.png"
+path = "test"
+image ="wild.jpg"
+
 IMAGE_PATH = os.path.join(path, image)
 results = model(IMAGE_PATH)  # Predict on an image
 # Process results list

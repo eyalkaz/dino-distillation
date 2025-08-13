@@ -3,6 +3,8 @@
 This project implements a **model distillation pipeline** that uses **Grounding DINO**  to automatically generate labeled datasets, then trains a smaller **YOLO model** on this generated data.  
 The result is a lightweight, distilled object detector that can be run efficiently while retaining high accuracy.
 
+Spesefically if you use this repo without changes, the number of parameters in the distilized model will be 2,590,035 compared to 172,249,090 with grounding dino.
+
 ---
 
 ## 📌 Features
