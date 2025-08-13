@@ -1,12 +1,8 @@
 from ultralytics import YOLO
-import json
-import numpy as np
-import matplotlib.pyplot as plt
 import torch
 import cv2
 import sys
 import os
-import time
 import random
 import shutil
 import pathlib
@@ -17,13 +13,10 @@ from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 debug = False
 objects = []
 images_for_dino = "images_for_dino"
-results_dir = "results"
 constants_path = "CONSTANTS/"
 root_dir = "datasets/"
 labels_dir = root_dir + "labels"
 images_dir = root_dir + "images"
-test_dir = "test"
-test_image = "tomatos.png"
 dino_model_id = "IDEA-Research/grounding-dino-tiny"
 train_val_probability = 0.8
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -41,15 +34,6 @@ def get_boxes_from_dino(result):
         dino_boxes.append(box)
         dino_scores.append(score.item()) #convert scalar tensor to float
     return [dino_boxes, dino_scores]
-
-def get_boxes_from_yolo(result):
-    yolo_boxes = []
-    data = json.loads(result.to_json())
-    for obj in data:
-        box = obj['box']
-        yolo_boxes.append([box["x1"], box["y1"],box["x2"],box["y2"]])
-
-    return yolo_boxes
 
 def detect_image(filename, directory):  
     image_path = os.path.join(directory, filename)
@@ -141,7 +125,7 @@ def distill_dino():
 
     print("starting to train distilized_model")
     # Load a pretrained YOLO model
-    distilized_model = YOLO("parent_model_yolo11n.pt")
+    distilized_model = YOLO("base_model_yolo11n.pt")
     # Train the model on the dino output 100 epochs
     train_results = distilized_model.train(
         data="distilled.yaml",  # Path to dataset configuration file
@@ -155,17 +139,6 @@ def distill_dino():
     )
 
     return distilized_model
-
-
-
-def test_distill_yolo(model, image, test_dir):
-    # Perform object detection on an image
-    path = os.path.join(test_dir, image)
-    results = model(path)  # Predict on an image
-    # Process results list
-    for result in results:
-        result.show()  # display to screen
-
 
 def setup_folders():
     shutil.rmtree(root_dir, ignore_errors=True)

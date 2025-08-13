@@ -18,8 +18,9 @@ The result is a lightweight, distilled object detector that can be run efficient
 ```
 .
 ├── distill.py                  # Main pipeline: DINO detection  → YOLO training
-├── ultralytics_try_distill.py  # Test script for running with the distilled YOLO model
+├── ultralytics_try_distill.py  # Test script for running with the distilled model
 ├── distilled.yaml              # YOLO dataset configuration
+├── base_model_yolo11n.pt       # base model to start the distilation from
 ├── requirements.txt            # Python dependencies
 ├── .gitignore                  # Ignored files and folders
 └── datasets/                   # Auto-generated dataset (images & labels)
@@ -31,21 +32,14 @@ The result is a lightweight, distilled object detector that can be run efficient
 
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/eyalkaz/project.git
-   cd project
+   git clone https://github.com/eyalkaz/dino-distillation.git
+   cd dino-distillation
    ```
 
 2. **Install dependencies**  
    ```bash
    pip install -r requirements.txt
    ```
-
-3. **(optional, if use tiny sam) Download TinySAM weights**  
-   Place `tinysam.pth` into:
-   ```
-   TinySAM/weights/tinysam.pth
-   ```
-
 ---
 
 ## 🚀 Usage
@@ -89,7 +83,7 @@ After training, inference with the distilled YOLO model produces bounding boxes 
 - **`debug` flag** in `distill.py`:
   - `True` → Uses existing dataset, skips DINO labeling.
   - `False` → Runs full pipeline, recreates dataset.
-- **`parent_model_yolo11n.pt` model** in `distill.py` can be changed to any parent model  you want
+- **`base_model_yolo11n.pt` model** in `distill.py` can be changed to any model  you want (use to change num of paramters in end result)
 - **`train_val_probability`** → Controls train/val split ratio.
 - **`num_epoches`** → Number of YOLO training epochs.
 - **`distilled.yaml`** → YOLO dataset config (classes, paths).
@@ -112,7 +106,7 @@ In addition to the default **DINO-only** pipeline (`distill.py`), there is an op
 
 ### Why use it?
 - Visualize object masks in addition to bounding boxes
-- Potentially refine dataset annotations (if mask data is needed)
+- Potentially distilize the segmentation model as well
 
 ### How to run DINO + TinySAM
 1. **Clone TinySAM**
@@ -127,10 +121,7 @@ TinySAM/weights/tinysam.pth
 ```
 
 3. **Ensure Python import works**
-Keep the `TinySAM` folder in your project root or add it to `PYTHONPATH`:
-```bash
-export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-```
+Keep the `TinySAM` folder in your project root
 
 4. Run `distill+SAM.py` or `ultralytics_try_distill+SAM.py` from the drafts folder as described below.
 
