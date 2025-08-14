@@ -3,35 +3,16 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import cv2
-
-# Load a pretrained YOLO11n model
-model = YOLO("distilized_model.pt")
-total_params = sum(p.numel() for p in model.parameters())
-print(f"Number of parameters in ultralytics_distill: {total_params}")
-model.info()
+import sys
 
 # Perform object detection on an image
 path = "test"
 image ="wild.jpg"
 
 IMAGE_PATH = os.path.join(path, image)
-results = model(IMAGE_PATH)  # Predict on an image
-# Process results list
+
 # Set confidence threshold
 CONFIDENCE_THRESHOLD = 0.65
-
-# Collect detections above threshold
-filtered_detections = []
-
-for result in results:
-    boxes = result.boxes
-    if boxes is not None:
-        for i in range(len(boxes)):
-            conf = boxes.conf[i].item()
-            if conf >= CONFIDENCE_THRESHOLD:
-                x1, y1, x2, y2 = boxes.xyxy[i].tolist()
-                class_id = int(boxes.cls[i].item())
-                filtered_detections.append((x1, y1, x2, y2, conf, class_id))
 
 # Display function using your code
 def display_detections(image_path, detections, save_path=None):
@@ -65,5 +46,44 @@ def display_detections(image_path, detections, save_path=None):
 
     plt.show()
 
-# Call the display function
-display_detections(IMAGE_PATH, filtered_detections)
+
+def main():
+    global IMAGE_PATH
+    global CONFIDENCE_THRESHOLD
+
+    if len(sys.argv) > 1:
+        IMAGE_PATH = sys.argv[1]
+    else:
+        print(f"No image provided, detecting on {IMAGE_PATH}")
+
+    if len(sys.argv) > 2:
+        CONFIDENCE_THRESHOLD = float(sys.argv[2])
+    else:
+        print(f"No confidence threshold provided, using {CONFIDENCE_THRESHOLD}")
+    
+    # Load a pretrained YOLO11n model
+    model = YOLO("distilized_model.pt")
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f"Number of parameters in ultralytics_distill: {total_params}")
+    model.info()
+
+    results = model(IMAGE_PATH)  # Predict on an image
+
+
+    # Collect detections above threshold
+    filtered_detections = []
+
+    for result in results:
+        boxes = result.boxes
+        if boxes is not None:
+            for i in range(len(boxes)):
+                conf = boxes.conf[i].item()
+                if conf >= CONFIDENCE_THRESHOLD:
+                    x1, y1, x2, y2 = boxes.xyxy[i].tolist()
+                    class_id = int(boxes.cls[i].item())
+                    filtered_detections.append((x1, y1, x2, y2, conf, class_id))
+
+    display_detections(IMAGE_PATH, filtered_detections)
+
+if __name__ == "__main__":
+    main()

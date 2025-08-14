@@ -20,7 +20,7 @@ Spesefically if you use this repo without changes, the number of parameters in t
 ```
 .
 ├── distill.py                  # Main pipeline: DINO detection  → YOLO training
-├── ultralytics_try_distill.py  # Test script for running with the distilled model
+├── try_distill.py              # Test script for running with the distilled model
 ├── distilled.yaml              # YOLO dataset configuration
 ├── base_model_yolo11n.pt       # base model to start the distilation from
 ├── requirements.txt            # Python dependencies
@@ -66,11 +66,22 @@ distilized_model.pt
 
 ### 2. Test the distilled model
 ```bash
-python ultralytics_try_distill.py
+python try_distill.py path/to/image [confidence_threshold]
 ```
-- Change the `image` variable inside the script to test on different images.
-- Adjust `CONFIDENCE_THRESHOLD` in the script to filter low-confidence detections.
+- **`path/to/image`** → Path to the image you want to run detection on.  
+  If omitted, it defaults to the path set inside `try_distill.py`.
+- **`confidence_threshold`** *(optional)* → Minimum confidence score for displaying a detection (float).  
+  Defaults to `0.65`.
 
+Example:
+```bash
+python try_distill.py test/wild.jpg 0.7
+```
+
+This will:
+1. Load `distilized_model.pt`
+2. Run YOLO inference on the given image
+3. Display bounding boxes for detections above the specified confidence threshold
 ---
 
 ## 📊 Example Output
